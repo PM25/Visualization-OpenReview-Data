@@ -9,13 +9,14 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+# chrome_options.add_argument("--headless")
 driver = webdriver.Chrome(options=chrome_options)
 
 
 def crawl_paperlist(conference, year, presentation_type):
     link = f"https://openreview.net/group?id={conference}.cc/{year}/Conference#{presentation_type}"
     driver.get(link)
+    driver.refresh()
 
     print("Waiting for the page to load...")
     cond = EC.presence_of_element_located((By.CLASS_NAME, "submissions-list"))
@@ -61,8 +62,8 @@ def get_presentation_types(conference, year):
     types.remove("your-consoles") if "your-consoles" in types else None
     return types
 
-conferences = {"ICLR": ["2018", "2019", "2020", "2021", "2022"], "NeurIPS": ["2021", "2022", "2023"]}
 
+conferences = {"ICLR": ["2018", "2019", "2020", "2021", "2022"], "NeurIPS": ["2021", "2022", "2023"]}
 
 for conf, years in conferences.items():
     for year in years:
@@ -78,5 +79,5 @@ for conf, years in conferences.items():
         f.write("\t".join(["paper_id", "year", "title", "link", "presentation_type", "keywords", "abstract"]) + "\n")
         f.write("\n".join(["\t".join(result) for result in success_results]))
 
-driver.close()    
+driver.close()
 print("File saved to paper_list.tsv")
